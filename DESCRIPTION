@@ -1,0 +1,9 @@
+Package: kwb.ucode
+Maintainer: Hauke Sonnenberg <hauke.sonnenberg@kompetenz-wasser.de>
+Author: Hauke Sonnenberg
+Version: 0.0.99
+Depends: kwb.wtaq
+License: GPL
+Title: Interface to auto-calibration software UCODE
+Description: Functions enabling to write UCODE input files and to run UCODE.
+
