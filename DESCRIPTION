@@ -6,4 +6,5 @@ Depends: kwb.wtaq
 License: GPL
 Title: Interface to auto-calibration software UCODE
 Description: Functions enabling to write UCODE input files and to run UCODE.
-
+Remotes:  
+    github::kwb-r/kwb.wtaq
