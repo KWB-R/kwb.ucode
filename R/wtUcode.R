@@ -1,81 +1,113 @@
-# ucConf(): Configure UCODE run ------------------------------------------------
-ucConf <- function # Configure UCODE run
-### Configure UCODE run
-(
+# ucConf -----------------------------------------------------------------------
+
+#' Configure UCODE run
+#' 
+#' @param general configuration of control \code{parameters} as retrieved by
+#'   \code{\link{ucConfGeneral}}.
+#' @param parameters data.frame with each row representing a parameter
+#'   configuration as e.g. retrieved by \code{\link{ucConfParameter}}. For
+#'   possible parameter names see \code{\link{ucSetPlaceholder}}
+#' @param weights Matrix of \code{weights} as e.g. retrieved by
+#'   \code{\link{ucDefaultConfWeights}}. Matix of \code{weights} is used when
+#'   calculating overall fitness. Row names = names of fitness indicators out of
+#'   the set of c("ME", "MAE", "MSE", "RMSE", "NRMSE", "PBIAS", "RSR", "rSD",
+#'   "NSE", "mNSE", "rNSE", "d", "md", "rd", "cp", "r", "R2", "bR2", "KGE,
+#'   "VE"). Column names = well names ("PW" = pumping well, observation wells
+#'   named as in parameter setting). See example.
+#' 
+#' @seealso \code{\link{ucPrepCalib}}  
+#' 
+ucConf <- function(
   general = ucConfGeneral(), 
-  ### configuration of control parameters as retrieved by \code{\link{ucConfGeneral}}.
   parameters = ucDefaultConfParameters(),
-  ### data.frame with each row representing a parameter configuration as 
-  ### e.g. retrieved by \code{\link{ucConfParameter}}. For possible parameter
-  ### names see \code{\link{ucSetPlaceholder}}
   weights = ucDefaultConfWeights()
-  ### Matrix of weights as e.g. retrieved by \code{\link{ucDefaultConfWeights}}. 
-  ### Matix of weights is used when calculating overall fitness. 
-  ### Row names = names of fitness indicators out of the set of c("ME", "MAE", 
-  ### "MSE", "RMSE", "NRMSE", "PBIAS", "RSR", "rSD", "NSE", "mNSE", "rNSE",
-  ### "d", "md", "rd", "cp", "r", "R2", "bR2", "KGE, "VE"). Column names = well
-  ### names ("PW" = pumping well, observation wells named as in parameter 
-  ### setting). See example.
 )
 {
-  ##seealso<< \code{\link{ucPrepCalib}}  
   list(general = general, parameters = parameters, weights = weights)
 }
 
-# ucConfGeneral() --------------------------------------------------------------
-ucConfGeneral <- function # general settings in UCODE configuration
-### general settings in UCODE configuration
-(
-  gof.digits = 5,
-  ### Number of digits to be used in goodness of fit values. Default: 5
-  maxIter = 100
-  ### Maximum number of parameter-estimation iterations allowed before stopping  
-)
+# ucConfGeneral ----------------------------------------------------------------
+
+#' General settings in UCODE configuration
+#' 
+#' @param gof.digits Number of digits to be used in goodness of fit values.
+#'   Default: 5
+#' @param maxIter Maximum number of parameter-estimation iterations allowed
+#'   before stopping
+#' 
+#' @seealso \code{\link{ucConf}}    
+#' 
+ucConfGeneral <- function(gof.digits = 5, maxIter = 100)
 {
-  ##seealso<< \code{\link{ucConf}}    
   list(gof.digits = gof.digits, maxIter = maxIter)
 }
 
-# ucConfParameter() ------------------------------------------------------------------
-ucConfParameter <- structure(function # Create parameter for UCODE configuration
-### Create parameter for UCODE configuration
-(
+# ucConfParameter --------------------------------------------------------------
+
+#' Create parameter for UCODE configuration
+#' 
+#' @param paramname Parameter name (up to 12 characters; not case sensitive) - a
+#'   character string that is used in a template file or in an equation of a
+#'   derived parameter in the Derived_Parameters input block. Each parameter
+#'   name needs to be unique and can not be the same as any parameter name
+#'   defined in the Derived_Parameter input block. For possible parameter names
+#'   see \code{\link{ucSetPlaceholder}}
+#' @param startvalue Starting parameter value. Default=A huge real number. The
+#'   huge real number is obtained for the computer being used and commonly is
+#'   about 1e38.
+#' @param lowerValue Smallest reasonable value for this parameter. Default=
+#'   -(Huge real number). In absolute value, commonly about -1e38.
+#' @param upperValue Largest reasonable value for this parameter. Default=
+#'   +(Huge real number). Commonly about +1e38.
+#' @param lowerConstraint Lower limit of considered parameter values. Default
+#'   (HS): 0
+#' @param upperConstraint Upper limit of considered parameter values. Default
+#'   (HS): 1
+#' @param constrain yes: \code{constrain} parameter values using LowerConstraint
+#'   and UpperConstraint. Default (HS): yes.
+#' @param adjustable yes: change this value as needed depending on the purpose
+#'   of the UCODE_2005 run defined in the UCODE_Control_Data input file. no:
+#'   leave the value of this parameter unchanged. Default (HS): "yes".
+#' @param maxChange Maximum fractional parameter change allowed between
+#'   parameter iterations. Default=2.0.
+#' @param perturbAmt Fractional amount of parameter value to perturb to
+#'   calculate sensitivity. Commonly 0.01 to 0.10. Default (HS): 0.5. See
+#'   discussion in Chapter 3.
+#' 
+#' @return data.frame containing all argument values with column names equalling 
+#'   function argument names
+#' 
+#' @seealso \code{\link{ucConf}, \link{ucDefaultConfParameters}}    
+#' 
+#' @examples 
+#'   # Use rbind to create a data.frame containing parameter information as
+#'   # required by ucConf:
+#'   cpara <- rbind(
+#'     ucConfParameter(paramname = "HKR", startvalue = 2e-5, 
+#'                     lowerConstraint = 1e-5, upperConstraint = 1e-1,
+#'                     maxChange = 1, perturbAmt = 0.5, 
+#'                     constrain = "yes", adjustable = "yes"),
+#'     ucConfParameter(paramname = "HKZ", startvalue = 2e-7, 
+#'                     lowerConstraint = 1e-7, upperConstraint = 1e-3,
+#'                     maxChange = 1, perturbAmt = 0.5,
+#'                     constrain = "yes", adjustable = "yes"))  
+#'   
+#'   # set this parameter setting in default UCODE configuration
+#'   ucConf(parameters = cpara)
+#'
+ucConfParameter <- function(
   paramname,
-  ### Parameter name (up to 12 characters; not case sensitive) - a character 
-  ### string that is used in a template file or in an equation of a derived 
-  ### parameter in the Derived_Parameters input block. Each parameter name 
-  ### needs to be unique and can not be the same as any parameter name defined 
-  ### in the Derived_Parameter input block. For possible parameter
-  ### names see \code{\link{ucSetPlaceholder}}
   startvalue = 1e38,
-  ### Starting parameter value. Default=A huge real number. The huge real number
-  ### is obtained for the computer being used and commonly is about 1e38.
   lowerValue = -1e38,
-  ### Smallest reasonable value for this parameter. Default= -(Huge real
-  ### number). In absolute value, commonly about -1e38.
   upperValue = 1e38,
-  ### Largest reasonable value for this parameter. Default= +(Huge real number).
-  ### Commonly about +1e38.
   lowerConstraint = 0,
-  ### Lower limit of considered parameter values. Default (HS): 0
   upperConstraint = 1,
-  ### Upper limit of considered parameter values. Default (HS): 1
   constrain = "yes",
-  ### yes: constrain parameter values using LowerConstraint and UpperConstraint.
-  ### Default (HS): yes.
   adjustable = "yes",
-  ### yes: change this value as needed depending on the purpose of the
-  ### UCODE_2005 run defined in the UCODE_Control_Data input file. no: leave the
-  ### value of this parameter unchanged. Default (HS): "yes".
   maxChange = 2.0,
-  ### Maximum fractional parameter change allowed between parameter iterations.
-  ### Default=2.0.
   perturbAmt = 0.5
-  ### Fractional amount of parameter value to perturb to calculate sensitivity.
-  ### Commonly 0.01 to 0.10. Default (HS): 0.5. See discussion in Chapter 3.  
 )
 {
-  ##seealso<< \code{\link{ucConf}, \link{ucDefaultConfParameters}}    
   data.frame(
     paramname = paramname,
     startvalue = startvalue,
@@ -86,85 +118,86 @@ ucConfParameter <- structure(function # Create parameter for UCODE configuration
     constrain = constrain,
     adjustable = adjustable,
     maxChange = maxChange,
-    perturbAmt = perturbAmt, stringsAsFactors = FALSE)
-  
-  ### data.frame containing all argument values with column names equalling 
-  ### function argument names
-}, ex = function()
-{
-  # Use rbind to create a data.frame containing parameter information as
-  # required by ucConf:
-  cpara <- rbind(
-    ucConfParameter(paramname = "HKR", startvalue = 2e-5, 
-                    lowerConstraint = 1e-5, upperConstraint = 1e-1,
-                    maxChange = 1, perturbAmt = 0.5, 
-                    constrain = "yes", adjustable = "yes"),
-    ucConfParameter(paramname = "HKZ", startvalue = 2e-7, 
-                    lowerConstraint = 1e-7, upperConstraint = 1e-3,
-                    maxChange = 1, perturbAmt = 0.5,
-                    constrain = "yes", adjustable = "yes"))  
-  
-  # set this parameter setting in default UCODE configuration
-  ucConf(parameters = cpara)
-})
-
-# ucDefaultConfParameters() ---------------------------------------------------
-ucDefaultConfParameters <- function
-### default parameter definition for UCODE configuration
-(
-) 
-{
-  ##seealso<< \code{\link{ucConfParameter}, \link{ucConf}}
-  rbind(ucConfParameter(paramname = "HKR", 
-                        startvalue = 2e-5, 
-                        lowerConstraint = 1e-5, 
-                        upperConstraint = 1e-1,
-                        constrain = "yes", 
-                        adjustable = "yes", 
-                        maxChange = 1, 
-                        perturbAmt = 0.5),
-        ucConfParameter(paramname = "HKZ", 
-                        startvalue = 2e-7, 
-                        lowerConstraint = 1e-7, 
-                        upperConstraint = 1e-3,
-                        constrain = "yes",
-                        adjustable = "yes",
-                        maxChange = 1,
-                        perturbAmt = 0.5))
-
-  ### data.frame with each row representing a model parameter
+    perturbAmt = perturbAmt, stringsAsFactors = FALSE
+  )
 }
 
-# ucDefaultConfWeights() ------------------------------------------------------------
+# ucDefaultConfParameters ------------------------------------------------------
+
+#' Default parameter definition for UCODE configuration
+#' 
+#' @return data.frame with each row representing a model parameter
+#' 
+#' @seealso \code{\link{ucConfParameter}, \link{ucConf}}
+#' 
+ucDefaultConfParameters <- function() 
+{
+  rbind(
+    ucConfParameter(
+      paramname = "HKR", 
+      startvalue = 2e-5, 
+      lowerConstraint = 1e-5, 
+      upperConstraint = 1e-1,
+      constrain = "yes", 
+      adjustable = "yes", 
+      maxChange = 1, 
+      perturbAmt = 0.5
+    ),
+    ucConfParameter(
+      paramname = "HKZ", 
+      startvalue = 2e-7, 
+      lowerConstraint = 1e-7, 
+      upperConstraint = 1e-3,
+      constrain = "yes",
+      adjustable = "yes",
+      maxChange = 1,
+      perturbAmt = 0.5
+    )
+  )
+}
+
+# ucDefaultConfWeights ---------------------------------------------------------
+
+#' Default weight matrix
+#' 
+#' Weights are given for each pair of well name (pumping well \emph{PW} or
+#' observation \code{wells}) and name of goodness of fit (gof)-function.
+#' 
+#' @param wells well names, default:
+#'   `wtConfiguredWellnames(wtDefaultConfiguration())`
+#' @param gofs default: `c("RMSE", "NSE", "mNSE")`
+#' @return Matrix of weights used when calculating overall fitness. 
+#'   Row names = names of fitness indicators out of the set of c("ME", "MAE", 
+#'   "MSE", "RMSE", "NRMSE", "PBIAS", "RSR", "rSD", "NSE", "mNSE", "rNSE",
+#'   "d", "md", "rd", "cp", "r", "R2", "bR2", "KGE, "VE"). Column names = well
+#'   names ("PW" = pumping well, observation \code{wells} named as in parameter 
+#'   setting). 
+#' 
+#' @seealso \code{\link{ucConf}}  
+#' 
 ucDefaultConfWeights <- function
-### default weight matrix. Weights are given for each pair of well name 
-### (pumping well \emph{PW} or observation wells) and name of goodness of fit 
-### (gof)-function. 
 (
   wells = wtConfiguredWellnames(wtDefaultConfiguration()),
   gofs  = c("RMSE", "NSE", "mNSE")
 )  
 {
-  ##seealso<< \code{\link{ucConf}}  
-  matrix(rep(1, times = length(wells) * length(gofs)),
-         nrow = length(gofs), 
-         dimnames = list(gofs, wells))
-  ### Matix of weights used when calculating overall fitness. 
-  ### Row names = names of fitness indicators out of the set of c("ME", "MAE", 
-  ### "MSE", "RMSE", "NRMSE", "PBIAS", "RSR", "rSD", "NSE", "mNSE", "rNSE",
-  ### "d", "md", "rd", "cp", "r", "R2", "bR2", "KGE, "VE"). Column names = well
-  ### names ("PW" = pumping well, observation wells named as in parameter 
-  ### setting). 
+  matrix(
+    rep(1, times = length(wells) * length(gofs)),
+    nrow = length(gofs), 
+    dimnames = list(gofs, wells)
+  )
 }
 
-# ucTable() --------------------------------------------------------------------
-ucTable <- function
-### creates lines to be put in TABLE-data block of UCODE input file representing
-### data in given data frame
-(
-  dat
-  ### data frame
-) 
+# ucTable ----------------------------------------------------------------------
+
+#' Compose Table Data
+#' 
+#' Creates lines to be put in TABLE-data block of UCODE input file representing
+#' data in given data frame
+#' 
+#' @param dat data frame
+#' 
+ucTable <- function(dat)
 {
   # helper function to generate one line with elements in flist, considering
   # column widths given in cwidth  
@@ -181,83 +214,106 @@ ucTable <- function
   
   cwidth <- numeric()
   cnames <- names(dat)
+  
   for (i in 1:ncol(dat)) {
     cwidth[i] <- max(nchar(cnames[i]), nchar(as.character(dat[[i]])))
   }
+  
   datlines <- .datline(cnames, cwidth)
+  
   for (i in 1:nrow(dat)) {
     datlines <- c(datlines, .datline(dat[i, ], cwidth))
   }
   
-  c(sprintf("nrow=%d ncol=%d columnlabels", nrow(dat), ncol(dat)),
-    datlines)
+  c(
+    sprintf("nrow=%d ncol=%d columnlabels", nrow(dat), ncol(dat)),
+    datlines
+  )
 }
 
-# ucConf_UCODE_Control_Data() -------------------------------------------------------
-ucConf_UCODE_Control_Data <- function
-### lines for input block \emph{UCODE_Control_Data}
-(
-) 
+# ucConf_UCODE_Control_Data ----------------------------------------------------
+
+#' ucConf UCODE Control Data
+#' 
+#' lines for input block \emph{UCODE_Control_Data}
+#' 
+ucConf_UCODE_Control_Data <- function() 
 {
-  c("Begin UCODE_Control_Data KEYWORDS",
+  c(
+    "Begin UCODE_Control_Data KEYWORDS",
     "Optimize=yes",
-    "End UCODE_Control_Data")
+    "End UCODE_Control_Data"
+  )
 }
 
-# ucConf_Reg_GN_Controls() ----------------------------------------------------------
-ucConf_Reg_GN_Controls <- function
-### lines for input block \emph{UCODE_Control_Data}
-(
-  maxIter
-  ### Maximum number of parameter-estimation iterations allowed before stopping
-)   
+# ucConf_Reg_GN_Controls -------------------------------------------------------
+
+#' ucConf Reg GN Controls
+#' 
+#' lines for input block \emph{UCODE_Control_Data}
+#' 
+#' @param maxIter Maximum number of parameter-estimation iterations allowed before stopping
+#' 
+ucConf_Reg_GN_Controls <- function(maxIter)   
 {
-  c("Begin Reg_GN_Controls KEYWORDS",
+  c(
+    "Begin Reg_GN_Controls KEYWORDS",
     sprintf("MaxIter=%d", maxIter), 
-    "End Reg_GN_Controls")
+    "End Reg_GN_Controls"
+  )
 }
 
-# ucConf_Model_Command_Lines() ------------------------------------------------------
-ucConf_Model_Command_Lines <- function
-### lines for input block \emph{Model_Command_Lines}
-(
-  bfile
-  ### name of batch file to be invoked by UCODE
-) 
+# ucConf_Model_Command_Lines ---------------------------------------------------
+
+#' ucConf Model Command Lines
+#' 
+#' lines for input block \emph{Model_Command_Lines}
+#' 
+#' @param bfile name of batch file to be invoked by UCODE
+#' 
+ucConf_Model_Command_Lines <- function(bfile) 
 {
-  c("Begin Model_Command_Lines KEYWORDS",
+  c(
+    "Begin Model_Command_Lines KEYWORDS",
     sprintf("Command = '%s'", bfile),
     "Purpose = forward",
     "CommandID = WTAQ_GOF",
-    "End Model_Command_Lines")
-} 
-
-# ucConf_Parameter_Data() -----------------------------------------------------------
-ucConf_Parameter_Data <- function
-### lines for input block \emph{Parameter_Data}
-(
-  confParameters
-  ### data frame representing table as required in Parameter_Data block of
-  ### UCODE input file. , for example see \code{\link{ucDefaultConfParameters}}
-) 
-{
-  c("Begin Parameter_Data TABLE",
-    ucTable(confParameters),
-    "End Parameter_Data")  
+    "End Model_Command_Lines"
+  )
 }
 
-# ucConf_Observation_Data() ---------------------------------------------------------
-ucConf_Observation_Data <- function
-### lines for input block \emph{Observation_Data}
-(
-  weights 
-  ### Matix of weights used when calculating overall fitness. 
-  ### Row names = names of fitness indicators out of the set of c("ME", "MAE", 
-  ### "MSE", "RMSE", "NRMSE", "PBIAS", "RSR", "rSD", "NSE", "mNSE", "rNSE",
-  ### "d", "md", "rd", "cp", "r", "R2", "bR2", "KGE, "VE"). Column names = well
-  ### names ("PW" = pumping well, observation wells named as in parameter 
-  ### setting). For an example see \code{\link{ucConf}}
-)
+# ucConf_Parameter_Data --------------------------------------------------------
+
+#' Configuration of Parameter Data
+#' 
+#' Lines for input block \emph{Parameter_Data}
+#' 
+#' @param confParameters data frame representing table as required in Parameter_Data block of
+#'   UCODE input file. , for example see \code{\link{ucDefaultConfParameters}}
+#' 
+ucConf_Parameter_Data <- function(confParameters) 
+{
+  c(
+    "Begin Parameter_Data TABLE",
+    ucTable(confParameters),
+    "End Parameter_Data"
+  )  
+}
+
+# ucConf_Observation_Data ------------------------------------------------------
+
+#' Configuration of Observation Data
+#' 
+#' Lines for input block \emph{Observation_Data}
+#' 
+#' @param weights Matix of \code{weights} used when calculating overall fitness. 
+#'   Row names = names of fitness indicators out of the set of c("ME", "MAE", 
+#'   "MSE", "RMSE", "NRMSE", "PBIAS", "RSR", "rSD", "NSE", "mNSE", "rNSE",
+#'   "d", "md", "rd", "cp", "r", "R2", "bR2", "KGE, "VE"). Column names = well
+#'   names ("PW" = pumping well, observation wells named as in parameter 
+#'   setting). For an example see \code{\link{ucConf}}
+#' 
+ucConf_Observation_Data <- function(weights )
 {    
   dat <- NULL
   wells <- colnames(weights)
@@ -276,88 +332,114 @@ ucConf_Observation_Data <- function
       }
     }
   }
-  c("Begin Observation_Data TABLE",
+  
+  c(
+    "Begin Observation_Data TABLE",
     ucTable(dat),
-    "End Observation_Data")  
+    "End Observation_Data"
+  )  
 }
 
-# ucConf_Model_Input_Files() --------------------------------------------------------
-ucConf_Model_Input_Files <- function
-### lines for input block \emph{Model_Input_Files}
-(
-) 
+# ucConf_Model_Input_Files -----------------------------------------------------
+
+#' Configuration of Model Input Files
+#' 
+#' Lines for input block \emph{Model_Input_Files}
+#' 
+ucConf_Model_Input_Files <- function() 
 {
-  c("Begin Model_Input_Files KEYWORDS",
+  c(
+    "Begin Model_Input_Files KEYWORDS",
     "modinfile=wtaq.inp templatefile=wtaq.tpl",
-    "End Model_Input_Files")
+    "End Model_Input_Files"
+  )
 }
 
-# ucConf_Model_Output_Files() ---------------------------------------------------------
-ucConf_Model_Output_Files <- function
-### lines for input block \emph{Model_Output_Files}
-(
-)
+# ucConf_Model_Output_Files ----------------------------------------------------
+
+#' Configuration of Model Output Files
+#' 
+#' Lines for input block \emph{Model_Output_Files}
+#' 
+ucConf_Model_Output_Files <- function()
 {
-  c("Begin Model_Output_Files KEYWORDS",
-  "modoutfile=wtaq.gof instructionfile=wtaqGof.ins category=obs",
-  "End Model_Output_Files")
+  c(
+    "Begin Model_Output_Files KEYWORDS",
+    "modoutfile=wtaq.gof instructionfile=wtaqGof.ins category=obs",
+    "End Model_Output_Files"
+  )
 }
 
-# ucInpFileLines() ---------------------------------------------------------
-ucInpFileLines <- function
-### lines for UCODE main input file
-(
-  uconf,
-  ### UCODE configuration as retrieved by \code{\link{ucConf}}
-  command
-  ### name of batch file that is invoked by UCODE with each iteration  
-) 
+# ucInpFileLines ---------------------------------------------------------------
+
+#' Input File Lines
+#' 
+#' Lines for UCODE main input file
+#' 
+#' @param uconf UCODE configuration as retrieved by \code{\link{ucConf}}
+#' @param command name of batch file that is invoked by UCODE with each iteration  
+#' 
+ucInpFileLines <- function(uconf, command) 
 {
-  c(ucConf_UCODE_Control_Data(), "",
+  c(
+    ucConf_UCODE_Control_Data(), "",
     ucConf_Reg_GN_Controls(uconf$general$maxIter), "",
     ucConf_Model_Command_Lines(bfile = command), "",
     ucConf_Parameter_Data(uconf$parameters), "",
     ucConf_Observation_Data(uconf$weight), "",
     ucConf_Model_Input_Files(), "",
-    ucConf_Model_Output_Files())
+    ucConf_Model_Output_Files()
+  )
 }
 
-# ucWriteArgs() ------------------------------------------------------------
-ucWriteArgs <- function
-### write WTAQ arguments file
-(
-  afile
-) 
+# ucWriteArgs ------------------------------------------------------------------
+
+#' Write WTAQ arguments file
+#' 
+#' @param afile path to file containing arguments
+ucWriteArgs <- function(afile) 
 {
   cat("*** Writing WTAQ arguments file", afile, "...\n")
   write(sprintf("wtaq.%s", c("inp", "out", "plot")), afile)  
 }
 
-# ucWriteEvalGofR() --------------------------------------------------------
-ucWriteEvalGofR <- function
-### write R script evaluating goodness of fit from WTAQ output file
-(
-  rfile, 
-  uconf
-) 
+# ucWriteEvalGofR --------------------------------------------------------------
+
+#' Write R script evaluating goodness of fit from WTAQ output file
+#' 
+#' @param rfile path to R script file to be generated
+#' @param uconf UCODE configuration
+#' 
+ucWriteEvalGofR <- function(rfile, uconf)
 {
   cat("*** Writing GOF evaluation script", rfile, "...\n")
+  
   goflist <- paste("\"", rownames(uconf$weight), "\"", sep="", collapse=", ")
-  rows <- c("library(kwb.wtaq)",
-            "args <- commandArgs(TRUE)",
-            "if (length(args) == 0) stop(\"Usage: uwGofEval.R plot-file\")",
-            "pfile <- args[1]",
-            "if (!file.exists(pfile)) stop(\"Could not find plot-file: \", pfile)",
-            sprintf("print(uwGofEval(pfile, digits = %d, gofs=c(%s)))", 
-                    uconf$general$gof.digits, goflist))
+  
+  rows <- c(
+    "library(kwb.wtaq)",
+    "args <- commandArgs(TRUE)",
+    "if (length(args) == 0) stop(\"Usage: uwGofEval.R plot-file\")",
+    "pfile <- args[1]",
+    "if (!file.exists(pfile)) stop(\"Could not find plot-file: \", pfile)",
+    sprintf("print(uwGofEval(pfile, digits = %d, gofs=c(%s)))", 
+            uconf$general$gof.digits, goflist)
+  )
+  
   write(rows, rfile)
 }
 
-# ucWriteBatchWtaq() -----------------------------------------------------------
-ucWriteBatchWtaq <- function
-### write batch file invoked by UCODE, running first WTAQ and second the R 
-### script doing the goodness of fit evaluation
-(
+# ucWriteBatchWtaq -------------------------------------------------------------
+
+#' Write batch file invoked by UCODE, running first WTAQ and second the R 
+#'   script doing the goodness of fit evaluation
+#' 
+#' @param bfile path to batch file
+#' @param wtaq path to WTAQ executable
+#' @param verbose if \code{TRUE}, the output is not discarded
+#' @param waitForInput if \code{TRUE}, "pause" is added to the batch file
+#' 
+ucWriteBatchWtaq <- function(
   bfile, 
   wtaq, 
   verbose,
@@ -365,75 +447,93 @@ ucWriteBatchWtaq <- function
 ) 
 {
   cat("*** Writing batch file", bfile, "...\n")  
-  blines <- c("@ECHO OFF",
-              "REM Paths to RCmd and WTAQ executables",
-              sprintf("SET RSCRIPT=\"%s\"", 
-                      gsub("/", "\\\\", file.path(R.home("bin"), "Rscript.exe"))),
-              sprintf("SET WTAQ=\"%s\"", gsub("/", "\\\\", wtaq)),
-              "echo *** Running WTAQ...",
-              sprintf("%%WTAQ%% < wtaq.args %s", 
-                      ifelse(verbose, "", "> nul")),
-              "echo *** Evaluating...",
-              sprintf("%%RSCRIPT%% serialWtaqGof.R wtaq.plot > wtaq.gof %s",
-                      ifelse(verbose, "", "2> nul")))
+  
+  blines <- c(
+    "@ECHO OFF",
+    "REM Paths to RCmd and WTAQ executables",
+    sprintf("SET RSCRIPT=\"%s\"", 
+            gsub("/", "\\\\", file.path(R.home("bin"), "Rscript.exe"))),
+    sprintf("SET WTAQ=\"%s\"", gsub("/", "\\\\", wtaq)),
+    "echo *** Running WTAQ...",
+    sprintf("%%WTAQ%% < wtaq.args %s", 
+            ifelse(verbose, "", "> nul")),
+    "echo *** Evaluating...",
+    sprintf("%%RSCRIPT%% serialWtaqGof.R wtaq.plot > wtaq.gof %s",
+            ifelse(verbose, "", "2> nul"))
+  )
+  
   if (waitForInput) {
     blines <- c(blines, "pause")
   }
+  
   write(blines, bfile)  
 }
 
-# ucWriteBatchWtaqParallel() -----------------------------------------------------------
-ucWriteBatchWtaqParallel <- function
-### write batch file invoked by UCODE, which is just waiting until WTAQ has
-### finished and goodness of fit is available
-(
-  bfile, 
-  recheckAfterMs = 10
-) 
+# ucWriteBatchWtaqParallel -----------------------------------------------------
+
+#' Write batch file invoked by UCODE, which is just waiting until WTAQ has
+#'   finished and goodness of fit is available
+#' 
+#' @param bfile path to batchfile
+#' @param recheckAfterMs time to wait for file, in milliseconds
+ucWriteBatchWtaqParallel <- function(bfile, recheckAfterMs = 10) 
 {
   cat("*** Writing batch file", bfile, "...\n")  
-  blines <- c("@ECHO OFF",
-              "echo > .\\_INP_AVAILABLE_",
-              "echo *** Wait until WTAQ has finished and goodness of fit is available...",
-              sprintf(".\\WaitForFile.exe _GOF_AVAILABLE_ %d", recheckAfterMs),
-              "del _GOF_AVAILABLE_")
+  
+  blines <- c(
+    "@ECHO OFF",
+    "echo > .\\_INP_AVAILABLE_",
+    "echo *** Wait until WTAQ has finished and goodness of fit is available...",
+    sprintf(".\\WaitForFile.exe _GOF_AVAILABLE_ %d", recheckAfterMs),
+    "del _GOF_AVAILABLE_"
+  )
+  
   write(blines, bfile)  
 }
 
-# ucWriteBatchUcode() -----------------------------------------------------------
+# ucWriteBatchUcode ------------------------------------------------------------
+
+#' Write batch file invoking UCODE
+#' 
+#' @param bfile full path to batch file
+#' @param ucode full path to UCODE executable file
+#' @param waitForInput if \code{TRUE}, "pause" is added to the batch file
+#' @param inpfile name of \code{ucode} input file
+#' 
 ucWriteBatchUcode <- function
-### write batch file invoking UCODE
 (
   bfile, 
-  ### full path to batch file
   ucode = system.file("extdata", "ucode_2005.exe", package = "kwb.wtaq"),
-  ### full path to UCODE executable file
   waitForInput = TRUE,
   inpfile = "ucode.in"
-  ### name of ucode input file
 ) 
 {
   cat("*** Writing batch file", bfile, "...\n")  
-  blines <- c("@ECHO OFF",
-              "REM Path to UCODE executable",
-              sprintf("SET UCODE=\"%s\"", 
-                      gsub("/", "\\\\", ucode)),
-              "echo.",
-              "echo *** Running calibration with UCODE...",
-              "echo.",
-              ifelse(waitForInput, "pause", ""),
-              sprintf("%%UCODE%% %s cal", inpfile),
-              ifelse(waitForInput, "pause", ""))
+  
+  blines <- c(
+    "@ECHO OFF",
+    "REM Path to UCODE executable",
+    sprintf("SET UCODE=\"%s\"", 
+            gsub("/", "\\\\", ucode)),
+    "echo.",
+    "echo *** Running calibration with UCODE...",
+    "echo.",
+    ifelse(waitForInput, "pause", ""),
+    sprintf("%%UCODE%% %s cal", inpfile),
+    ifelse(waitForInput, "pause", "")
+  )
+  
   write(blines, bfile)  
 }
 
-# ucTestBatchWtaq(): Test batch file with parameter setting ------------------------
-ucTestBatchWtaq <- function
-### test run of batch file
-(
-  bfile, 
-  wtaqConfiguration
-) 
+# ucTestBatchWtaq --------------------------------------------------------------
+
+#' Test run of batch file
+#' 
+#' @param bfile path to batch file
+#' @param wtaqConfiguration WTAQ configuration
+#' 
+ucTestBatchWtaq <- function(bfile, wtaqConfiguration) 
 {
   cat("*** Writing test input file ...\n")
   tdir <- dirname(bfile)
@@ -446,15 +546,15 @@ ucTestBatchWtaq <- function
   setwd(odir)  
 }
 
-# ucWriteInstruction() -----------------------------------------------------
-ucWriteInstruction <- function
-### Write UCODE instruction file, describing how to read goodness of fit values
-### from wtaq.gof
-(
-  ifile, 
-  wtaqConfiguration,
-  uconf
-) 
+# ucWriteInstruction -----------------------------------------------------------
+
+#' Write UCODE instruction file, describing how to read goodness of fit values
+#'   from wtaq.gof
+#' 
+#' @param ifile path to instruction file
+#' @param wtaqConfiguration WTAW configuration
+#' @param uconf UCODE configuration
+ucWriteInstruction <- function(ifile, wtaqConfiguration, uconf) 
 {
   wells <- colnames(uconf$weight)
   gofs  <- rownames(uconf$weight)
@@ -475,30 +575,30 @@ ucWriteInstruction <- function
   write(txtrows, ifile)  
 }
 
-# ucWriteMainInput() -------------------------------------------------------
-ucWriteMainInput <- function
-### write UCODE main input file
-(
-  ufile, 
-  uconf,
-  command
-  ### name of batch file that is invoked by UCODE with each iteration  
-) 
+# ucWriteMainInput -------------------------------------------------------------
+
+#' Write UCODE main input file
+#' 
+#' @param ufile path to UCODE input file
+#' @param uconf UCODE configuration
+#' @param command name of batch file that is invoked by UCODE with each iteration  
+#' 
+ucWriteMainInput <- function(ufile, uconf, command) 
 {  
   cat("*** Writing UCODE input file", ufile, "...\n")
   lines <- ucInpFileLines(uconf, command)
   write(lines, ufile)  
 }
 
-# ucWriteTemplate() --------------------------------------------------------
-ucWriteTemplate <- function
-### write WTAQ input template file
-(
-  tfile, 
-  wtaqConfiguration, 
-  uconf,
-  pchar = "@"
-) 
+# ucWriteTemplate --------------------------------------------------------------
+
+#' Write WTAQ input template file
+#' 
+#' @param tfile path to template file
+#' @param wtaqConfiguration WTAQ configuration
+#' @param uconf UCODE configuration
+#' @param pchar character indicating a placeholder
+ucWriteTemplate <- function(tfile, wtaqConfiguration, uconf, pchar = "@") 
 {
   cat("*** Writing WTAQ template file", tfile, "...\n")
   
@@ -511,36 +611,90 @@ ucWriteTemplate <- function
   write(c(paste("jtf", pchar), wtInputFileLines(wtaqConfiguration)), tfile) 
 }
 
-# ucPrepCalib() ----------------------------------------------------------------
-ucPrepCalib <- structure(function
-### prepare calibration of WTAQ-model by creation of needed input and control 
-### files
-(
+# ucPrepCalib ------------------------------------------------------------------
+
+#' Prepare calibration of WTAQ-model by creation of needed input and control 
+#'   files
+#' 
+#' All input files needed to run a UCODE calibration of a WTAQ model are created
+#' in the directory \emph{tdir}. By default (\emph{open.tdir = TRUE}) this
+#' directory is opened in the Windows explorer. You can use the created batch
+#' file \code{runParallelUCode.bat} to start the UCODE calibration.
+#' 
+#' @param wtaqConfiguration WTAQ configuration as retrieved by
+#'   \code{\link{wtConfigure}}
+#' @param uconf UCode configuration as retrieved by \code{\link{ucConf}}
+#' @param tdir target directory in which all input and control files are to be
+#'   created. Default: temporary directory of current R Session. Attention! This
+#'   temporary directory will be emptied after the R session has finished!
+#' @param open.tdir if TRUE, the target directory will be opened in the Windows
+#'   Explorer in order to allow inspecting the created files
+#' @param wtaq full path to WTAQ executable
+#' @param ucode full path to UCODE executable
+#' 
+#' @seealso \code{\link{ucConf}, \link{ucRunParallel}}
+#' 
+#' @examples 
+#' # Define WTAQ configuration...
+#' # Here: just load the configuration of WTAQ's Sample problem 2
+#' wtaqConfiguration <- kwb.wtaq::wtConfigurationExample2()
+#'   
+#' # Define parameters
+#' p <- rbind(
+#'   ucConfParameter(
+#'     "HKR", 
+#'     startvalue = 2e-5, 
+#'     lowerConstraint = 1e-5, 
+#'     upperConstraint = 1e-1,
+#'     maxChange = 1, 
+#'     perturbAmt = 0.5
+#'   ),
+#'   ucConfParameter(
+#'     "HKZ", 
+#'     startvalue = 2e-7, 
+#'     lowerConstraint = 1e-7, 
+#'     upperConstraint = 1e-3,
+#'     maxChange = 1, 
+#'     perturbAmt = 0.5
+#'   )
+#' )  
+#'   
+#' # Define weights
+#' #
+#' # The following weight matrix w gives a weight of 1 to the root mean square
+#' # error (RMSE) and the Nash-Sutcliffe-Efficiency (NSE) between simulated
+#' # and observed values at the pumping well ("PW") and to the NSE between
+#' # simulated and observed values at the observation well "PS1".
+#' #
+#' # well -> PW PS1
+#' w <- matrix(c( 1,  1,  # RMSE  <- GOF
+#'               1,  1), # NSE
+#'            nrow = 2, byrow = TRUE,
+#'            dimnames = list(c("RMSE", "NSE"), c("PW", "PS1")))
+#' 
+#' # Create UCODE configuration
+#' uconf <- ucConf(general = ucConfGeneral(maxIter = 100),
+#'                parameters = p, weights = w)
+#' 
+#' # Create all input files needed to run the UCODE calibration of WTAQ
+#' # sample problem 2
+#' tdir <- ucPrepCalib(wtaqConfiguration = wtaqConfiguration, uconf = uconf)
+#' 
+#' # Run loop waiting for input files provided by UCODE (remove the comment
+#' # character in the following line!)
+#' #ucRunParallel(tdir, uconf = uconf)
+#' 
+#' # Now, run runParallelUCode.bat in the target directory...
+#'
+ucPrepCalib <- function(
   wtaqConfiguration = wtDefaultConfiguration(),
-  ### WTAQ configuration as retrieved by \code{\link{wtConfigure}}
   uconf = ucConf(),
-  ### UCode configuration as retrieved by \code{\link{ucConf}}
   tdir = tempdir(),
-  ### target directory in which all input and control files are to be created.
-  ### Default: temporary directory of current R Session. Attention! This
-  ### temporary directory will be emptied after the R session has finished!
   open.tdir = TRUE,
-  ### if TRUE, the target directory will be opened in the Windows Explorer in
-  ### order to allow inspecting the created files  
   wtaq = system.file("extdata", "wtaq.2.1.exe", package = "kwb.wtaq"),
-  ### full path to WTAQ executable
   ucode = system.file("extdata", "ucode_2005.exe", package = "kwb.wtaq")
-  ### full path to UCODE executable
 ) 
 {  
-  ##seealso<< \code{\link{ucConf}, \link{ucRunParallel}}
-  
-  ##details<< All input files needed to run a UCODE calibration of a WTAQ
-  ## model are created in the directory \emph{tdir}. By default 
-  ## (\emph{open.tdir = TRUE}) this directory is opened in the Windows explorer.
-  ## You can use the created batch file \code{runParallelUCode.bat} to start the
-  ## UCODE calibration.
-  
   # Write wtaq.args
   ucWriteArgs(file.path(tdir, "wtaq.args"))
   
@@ -587,72 +741,38 @@ ucPrepCalib <- structure(function
   
   # Return target directory
   tdir
-}, ex = function() {
-  # Define WTAQ configuration...
-  # Here: just load the configuration of WTAQ's Sample problem 2
-  wtaqConfiguration <- wtConfigurationExample2()
-  
-  # Define parameters
-  p <- rbind(
-    ucConfParameter("HKR", startvalue = 2e-5, 
-                    lowerConstraint = 1e-5, upperConstraint = 1e-1,
-                    maxChange = 1, perturbAmt = 0.5),
-    ucConfParameter("HKZ", startvalue = 2e-7, 
-                    lowerConstraint = 1e-7, upperConstraint = 1e-3,
-                    maxChange = 1, perturbAmt = 0.5))  
-  
-  # Define weights
-  #
-  #   The following weight matrix w gives a weight of 1 to the root mean square 
-  #   error (RMSE) and the Nash-Sutcliffe-Efficiency (NSE) between simulated 
-  #   and observed values at the pumping well ("PW") and to the NSE between 
-  #   simulated and observed values at the observation well "PS1". 
-  #
-  #     well -> PW PS1
-  w <- matrix(c( 1,  1,  # RMSE  <- GOF
-                 1,  1), # NSE
-              nrow = 2, byrow = TRUE,
-              dimnames = list(c("RMSE", "NSE"), c("PW", "PS1")))
-  
-  # Create UCODE configuration
-  uconf <- ucConf(general = ucConfGeneral(maxIter = 100), 
-                  parameters = p, weights = w)
-  
-  # Create all input files needed to run the UCODE calibration of WTAQ 
-  # sample problem 2  
-  tdir <- ucPrepCalib(wtaqConfiguration = wtaqConfiguration, uconf = uconf)
-  
-  # Run loop waiting for input files provided by UCODE (remove the comment
-  # character in the following line!)
-  #ucRunParallel(tdir, uconf = uconf)
-  
-  # Now, run runParallelUCode.bat in the target directory...
-})
+}
 
-# ucSetPlaceholder() ---------------------------------------------------------
-ucSetPlaceholder <- function # set placeholder in WTAQ parameter setting
-### set placeholder for parameter value in WTAQ parameter setting
-(
-  parname,
-  ### Parameter name. Must be one of the aquifer parameters "bb", "hkr", "hkz",
-  ### "ss", "sy" (for description see \code{\link{wtConfigureAquifer}}) or one of the
-  ### drainage parameters "acc", "akk", "amm", "axmm" (for description see 
-  ### \code{\link{wtConfigureDrainage}}; parameter "alpha" currently not supported) or
-  ### one of the pumpwell parameters "qq", "rw", "rc", "zpd", "zpl", "sw"
-  ### (for description see \code{\link{wtConfigurePumpwell}}) or one of the observation
-  ### well parameters "r_<i>", "z1_<i>", "z2_<i>", "zp_<i>", "rp_<i>", "xll_<i>"
-  ### (for description see \code{\link{wtConfigureObservationWell}}) where <i> is the number of 
-  ### the observation well according to the list index in the "obswell" section
-  ### of the parameter setting.
-  wtaqConfiguration,
-  ### WTAQ parameter setting as created by means of \code{\link{wtConfigure}}
-  pchar = "@"
-  ### character to be used as the very first and very last character of the
-  ### placeholder. Default: \dQuote{@}
-)
+# ucSetPlaceholder -------------------------------------------------------------
+
+#' Set placeholder in WTAQ parameter setting
+#' 
+#' Set placeholder for parameter value in WTAQ parameter setting
+#' 
+#' @param parname Parameter name. Must be one of the aquifer parameters "bb",
+#'   "hkr", "hkz", "ss", "sy" (for description see
+#'   \code{\link{wtConfigureAquifer}}) or one of the drainage parameters "acc",
+#'   "akk", "amm", "axmm" (for description see
+#'   \code{\link{wtConfigureDrainage}}; parameter "alpha" currently not
+#'   supported) or one of the pumpwell parameters "qq", "rw", "rc", "zpd",
+#'   "zpl", "sw" (for description see \code{\link{wtConfigurePumpwell}}) or one
+#'   of the observation well parameters "r_i", "z1_i", "z2_i", "zp_i",
+#'   "rp_i", "xll_i" (for description see
+#'   \code{\link{wtConfigureObservationWell}}) where "i" is the number of the
+#'   observation well according to the list index in the "obswell" section of
+#'   the parameter setting.
+#' @param wtaqConfiguration WTAQ parameter setting as created by means of
+#'   \code{\link{wtConfigure}}
+#' @param pchar character to be used as the very first and very last character
+#'   of the placeholder. Default: \dQuote{@}
+#' @return Parameter setting in which a parameter value is replaced by an
+#'   appropriate placeholder
+#' @seealso \code{\link{ucConfParameter}, \link{ucConf}}
+#' 
+ucSetPlaceholder <- function(parname, wtaqConfiguration, pchar = "@")
 {
-  ##seealso<< \code{\link{ucConfParameter}, \link{ucConf}}
   ph <- sprintf("%s%-10s%s", pchar, parname, pchar)
+  
   if (parname %in% c("bb", "hkr", "hkz", "ss", "sy")) {
     wtaqConfiguration$aquifer[[parname]] <- ph
   } 
@@ -675,39 +795,33 @@ ucSetPlaceholder <- function # set placeholder in WTAQ parameter setting
   }
   
   wtaqConfiguration  
-  # Parameter setting in which a parameter value is replaced by an appropriate
-  # placeholder
 }
 
-# uwGofEval(): Evaluate goodness of fit for WTAQ result ------------------------
-#' uwGofEval
+# uwGofEval() ------------------------------------------------------------------
+
+#' Evaluate goodness of fit for WTAQ result
 #'
-#' @param res res 
-#' @param logtimes logtimes 
-#' @param gofs gofs
-#' @param ... additional parameters passed to \link[hydroGOF]{gof}
+#' @param res either character string representing full path to WTAQ result plot file or
+#'   data.frame containing the content of the WTAQ result plot file.
+#' @param logtimes if TRUE, time steps are supposed to be logarithmic, i.e. it is assumed 
+#'   that the result plot file is in \dQuote{matrix form}.
+#' @param gofs vector of names of fitness functions, evaluated by \code{\link[hydroGOF]{gof}}.
+#'   Default: \code{c("ME", "MAE", "MSE", "RMSE", "NRMSE", "PBIAS", "RSR", 
+#'   "rSD", "NSE", "mNSE", "rNSE", "d", "md", "rd", "cp", "r", "R2", "bR2", 
+#'   "KGE", "VE")}
+#' @param \dots arguments passed to gof() function, e.g. digits: decimal places used for 
+#'   rounding the goodness-of-fit indexes.
 #'
-#' @return ???
+#' @return Evaluation matrix
 #' @export
 #'
 #' @importFrom hydroGOF gof
-uwGofEval <- function # Evaluate goodness of fit for WTAQ result
-### Evaluate goodness of fit for WTAQ result
-(
+#' 
+uwGofEval <- function(
   res, 
-  ### either character string representing full path to WTAQ result plot file or
-  ### data.frame containing the content of the WTAQ result plot file.
   logtimes = FALSE,
-  ### if TRUE, time steps are supposed to be logarithmic, i.e. it is assumed 
-  ### that the result plot file is in \dQuote{matrix form}.
   gofs = names(uwGofTargetValue()),
-  ### vector of names of fitness functions, evaluated by hydroGOF::gof.
-  ### Default: \code{c("ME", "MAE", "MSE", "RMSE", "NRMSE", "PBIAS", "RSR", 
-  ### "rSD", "NSE", "mNSE", "rNSE", "d", "md", "rd", "cp", "r", "R2", "bR2", 
-  ### "KGE", "VE")}
   ...
-  ### arguments passed to gof() function, e.g. digits: decimal places used for 
-  ### rounding the goodness-of-fit indexes.
 ) 
 {  
   if (! class(res) %in% c("character", "data.frame")) {
@@ -722,11 +836,11 @@ uwGofEval <- function # Evaluate goodness of fit for WTAQ result
     }
     
     # Read result data from plot file
-#     if (logtimes) { # log-cycle time steps -> matrix form
-#       res <- wtReadPlotFileMatrixView(res)
-#     } else {        # user-specified times -> list form
-#       res <- wtReadPlotFileListView(res)
-#     }
+    #     if (logtimes) { # log-cycle time steps -> matrix form
+    #       res <- wtReadPlotFileMatrixView(res)
+    #     } else {        # user-specified times -> list form
+    #       res <- wtReadPlotFileListView(res)
+    #     }
     res <- wtReadPlotFile(res, logtimes=logtimes)    
   }
   
@@ -748,21 +862,27 @@ uwGofEval <- function # Evaluate goodness of fit for WTAQ result
   evalmtx
 }
 
-# uwGofNames() -----------------------------------------------------------------
-uwGofNames <- function()# Names of available \emph{GOF} functions
-### Names of available \emph{Goodness of fit (GOF)} functions
+# uwGofNames -------------------------------------------------------------------
+
+#' Names of available \emph{GOF} functions
+#' 
+#' Names of available \emph{Goodness of fit (GOF)} functions
+#' 
+uwGofNames <- function()
 {
   sub(" %$", "", rownames(hydroGOF::gof(1:2,1:2)))
 }
 
-# uwGofTargetValue() -----------------------------------------------------------
-uwGofTargetValue <- function # target values for different GOF functions
-### target values for different GOF functions, i.e. values that GOF functions
-### return if observed and calculated timeseries are identical
-(
-  gofs = uwGofNames()
-  ### names of GOF functions of which target values are to be returned
-)
+# uwGofTargetValue -------------------------------------------------------------
+
+#' Target values for different GOF functions
+#' 
+#' Target values for different GOF functions, i.e. values that GOF functions
+#'   return if observed and calculated timeseries are identical
+#' 
+#' @param gofs names of GOF functions of which target values are to be returned
+#' 
+uwGofTargetValue <- function(gofs = uwGofNames())
 {
   tv <- data.frame(
     ME    = 0, # Mean Error
@@ -784,27 +904,30 @@ uwGofTargetValue <- function # target values for different GOF functions
     R2    = 1, # Coefficient of Determination ( 0 <= R2 <= 1 ). Gives the proportion of the variance of one variable that is predictable from the other variable
     bR2   = 1, # R2 multiplied by the coefficient of the regression line between sim and obs ( 0 <= bR2 <= 1 )
     KGE   = 1, # Kling-Gupta efficiency between sim and obs ( 0 <= KGE <= 1 )
-    VE    = 1) # Volumetric efficiency between sim and obs ( -Inf <= VE <= 1)  
-
+    VE    = 1  # Volumetric efficiency between sim and obs ( -Inf <= VE <= 1)
+  )
+  
   as.matrix(tv[, gofs])[1, ]
 }
 
-# .terminated() ----------------------------------------------------------------
-.terminated <- function() 
+# .terminated ------------------------------------------------------------------
+.terminated <- function()
 {
-  # Normal termination of ucode?
   ufile <- "cal.#uout"
   termtag <- "Normal termination of UCODE"
+  
   term <- file.exists(ufile) && length(grep(termtag, readLines(ufile))) > 0
+  
   if (term) {
     cat("\n*****\n*\n* Yippieh! Normal termination of UCODE!!!\n*\n*****\n")
   }
+  
   term
 }
 
 # ucPlotPng() ------------------------------------------------------------------
 
-#' ucPlotPng
+#' Plot WTAQ results to png file
 #'
 #' @param fname fname
 #' @param wtaqResult wtaqResult
@@ -814,31 +937,30 @@ uwGofTargetValue <- function # target values for different GOF functions
 #' @export
 #'
 #' @importFrom grDevices dev.off png
-ucPlotPng <- function
-### plot WTAQ results to png file
-(
-  fname, 
-  wtaqResult, 
-  i
-) 
+#' 
+ucPlotPng <- function(fname, wtaqResult, i) 
 {
   grDevices::png(fname)
   wtPlotResult(wtaqResult, sprintf("Iteration: %d", i))
-#  if (file.exists("cal._summary")) {
-#    ucPlotSummary("cal._summary")
-#  }
+  #  if (file.exists("cal._summary")) {
+  #    ucPlotSummary("cal._summary")
+  #  }
   grDevices::dev.off()
 }
 
-# htmlForCalibrationPage() -------------------------------------------------------------------
-htmlForCalibrationPage <- function # main HTML for calibration progress visualisation
-### main HTML for calibration progress visualisation
-(
+# htmlForCalibrationPage -------------------------------------------------------
+
+#' Main HTML for calibration progress visualisation
+#' 
+#' @param htmlHist default: "ucHistory.html"
+#' @param htmlCurr default: "ucCurrent.html"
+htmlForCalibrationPage <- function(
   htmlHist = "ucHistory.html", 
   htmlCurr = "ucCurrent.html"
 )
 {
-  c('<html>',
+  c(
+    '<html>',
     '<head>',
     '</head>', 
     '<frameset cols="200,*">',
@@ -851,74 +973,83 @@ htmlForCalibrationPage <- function # main HTML for calibration progress visualis
     '</body>',
     '</noframes>',
     '</frameset>',
-    '</html>')
+    '</html>'
+  )
 }
 
-# htmlForCalibrationState() ----------------------------------------------------------------
-htmlForCalibrationState <- function # Content HTML for calibration progress visualisation
-### Content HTML for calibration progress visualisation
-(
-  refresh=1
-  ### refresh time in seconds
-)
+# htmlForCalibrationState ------------------------------------------------------
+
+#' Content HTML for calibration progress visualisation
+#' 
+#' @param refresh \code{refresh} time in seconds
+#' 
+htmlForCalibrationState <- function(refresh = 1)
 {
-  c('<html>',
+  c(
+    '<html>',
     sprintf('<head><meta http-equiv="refresh" content="%d"></head>', refresh),
     '<body>',
     '<h1>Current status of WTAQ calibration with UCODE</h1>',
     '<img src="plots/plotCurr.png"></img>',
     '</body>',
-    '</html>')
+    '</html>'
+  )
 }
 
-# htmlForCalibrationHistory() ----------------------------------------------------------------
-htmlForCalibrationHistory <- function # History HTML for calibration progress visualisation
-### History HTML for calibration progress visualisation
-(
-  n, 
-  current = "ucCurrent.html"
-) 
+# htmlForCalibrationHistory ----------------------------------------------------
+
+#' History HTML for calibration progress visualisation
+#' 
+#' @param n number of plots
+#' @param current default: "ucCurrent.html"
+#' 
+htmlForCalibrationHistory <- function(n, current = "ucCurrent.html") 
 {
-  links <- sprintf('<p><a href="%s" target="content">Current</a></p>',
-                   current)
+  links <- sprintf(
+    '<p><a href="%s" target="content">Current</a></p>',
+    current
+  )
+  
   for (i in seq(n, 1, by = -1)) {
-    links <- c(links, 
-               sprintf(
-                 '<p><a href="plots/plot%04d.png" target="content">plot%04d</a></p>', 
-                 i, i))
+    links <- c(
+      links, 
+      sprintf(
+        '<p><a href="plots/plot%04d.png" target="content">plot%04d</a></p>', 
+        i, i)
+    )
   }
-  c('<html>',
+  
+  c(
+    '<html>',
     '<head><meta http-equiv="refresh" content="1"></head>',
     '<body>', '<h1>History</h1>', links, '</body>',
-    '</html>')
+    '</html>'
+  )
 }
 
 # ucRunParallel ----------------------------------------------------------------
-#' ucRunParallel
+
+#' Run main calibration loop 
 #'
-#' @param uconf uconf 
+#' @param uconf UCode configuration as retrieved by \code{\link{ucConf}}
 #' @param tdir tdir
 #' @param wtaq wtaq
-#' @param FUN FUN
+#' @param FUN function that is invoked each time before WTAQ is run
 #'
 #' @return ??? 
 #' @export
 #'
 #' @importFrom utils write.table
-ucRunParallel <- function # run main calibration loop
-### run main calibration loop 
-(
+#' @seealso \code{\link{ucPrepCalib}}
+#' 
+ucRunParallel <- function(
   uconf = ucConf(),
-  ### UCode configuration as retrieved by \code{\link{ucConf}}
   tdir = tempdir(),
   wtaq = system.file("extdata", "wtaq.2.1.exe", package = "kwb.wtaq"),
   FUN = NULL
-  ### function that is invoked each time before WTAQ is run
   #,autorun = FALSE
 ) 
 {
-  ##seealso<< \code{\link{ucPrepCalib}}
-  
   # Set current directory to target directory
   cat("Target directory:", tdir, "\n")
   cdir <- getwd()
@@ -933,22 +1064,23 @@ ucRunParallel <- function # run main calibration loop
   cat("Deleting", paste(dfiles, collapse = ", "), "...")
   unlink(dfiles)
   cat("ok.\n")
-
+  
   dir.create("plots")
   ucCurrent <- "ucCurrent.html"
   ucHistory <- "ucHistory.html"
   writeLines(htmlForCalibrationState(1), ucCurrent)
   writeLines(htmlForCalibrationPage(), "ucMain.html")
-    
+  
   cat("*\n* RUN runParallelUCode.bat IN THE TARGET DIRECTORY",
       "IN ORDER TO START THE CALIBRATION!\n*\n")
-#  if (autorun) {
-#    shell("echo x | runParallelUCode.bat ", wait = FALSE)  
-#  }
+  #  if (autorun) {
+  #    shell("echo x | runParallelUCode.bat ", wait = FALSE)  
+  #  }
   
   terminated <- FALSE
   
   i <- 1
+  
   while (!terminated) {
     
     # Wait for file "_INP_AVAILABLE_"
@@ -986,19 +1118,25 @@ ucRunParallel <- function # run main calibration loop
       gofres <- uwGofEval("wtaq.plot", digits = uconf$general$gof.digits, 
                           gofs = rownames(uconf$weights))
       utils::write.table(gofres, "wtaq.gof")
- 
+      
       # Write file _GOF_AVAILABLE_
       write("", "_GOF_AVAILABLE_")
       #while (!file.exists("_GOF_AVAILABLE_") && !(terminated <- .terminated())) {}      
     }
+    
     i <- i + 1
   } 
 }
 
-# ucReadSummary() --------------------------------------------------------------
-ucReadSummary <- function # Read UCODE summary file
-### Read UCODE summary file
-(sfile) {
+# ucReadSummary ----------------------------------------------------------------
+
+#' Read UCODE summary file
+#' 
+#' @param sfile path to summary file
+#' @return data frame, ordered by ITER
+#' 
+ucReadSummary <- function(sfile)
+{
   txt <- readLines(sfile)
   
   h1 <- grep("SELECTED STATISTICS FROM MODIFIED GAUSS-NEWTON ITERATIONS", txt)
@@ -1034,29 +1172,42 @@ ucReadSummary <- function # Read UCODE summary file
     d[[cname]] <- as.numeric(as.character(d[[cname]]))
   }
   
-  # return data frame, ordered by ITER
   d[order(d$ITER), ]  
 }
 
 # ucPlotSummary() --------------------------------------------------------------
-#' ucPlotSummary
+
+#' Plot UCODE summary file
 #'
-#' @param sfile sfile 
+#' @param sfile path to summary file 
 #'
 #' @return ???
 #' @export
 #'
 #' @importFrom lattice xyplot
-ucPlotSummary <- function # Plot UCODE summary file
-### Plot UCODE summary file
-(sfile) {
+#' 
+ucPlotSummary <- function(sfile)
+{
   dat <- ucReadSummary(sfile)
-  tr1 <- lattice::xyplot(HKR + HKZ ~ ITER, data = dat, type = "b", 
-                auto.key = list(columns = 2), xlab = "Iteration number")
-  tr2 <- lattice::xyplot(TOTAL ~ ITER, data = dat, type = "b", 
-                auto.key = list(columns = 2), xlab = "Iteration number",
-                ylab = "Total sum of squared weighted residuals", 
-                scales = list(y = list(log=TRUE)))  
+  
+  tr1 <- lattice::xyplot(
+    HKR + HKZ ~ ITER, 
+    data = dat, 
+    type = "b", 
+    auto.key = list(columns = 2), 
+    xlab = "Iteration number"
+  )
+  
+  tr2 <- lattice::xyplot(
+    TOTAL ~ ITER, 
+    data = dat, 
+    type = "b", 
+    auto.key = list(columns = 2), 
+    xlab = "Iteration number",
+    ylab = "Total sum of squared weighted residuals", 
+    scales = list(y = list(log = TRUE))
+  )
+  
   print(tr1, split = c(1, 1, 1, 2))
   print(tr2, split = c(1, 2, 1, 2), newpage = FALSE)  
 }
