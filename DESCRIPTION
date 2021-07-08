@@ -22,7 +22,9 @@ License: MIT + file LICENSE
 URL: https://github.com/KWB-R/kwb.ucode
 BugReports: https://github.com/KWB-R/kwb.ucode/issues
 Imports: 
-    kwb.wtaq
+    hydroGOF,
+    kwb.wtaq,
+    lattice
 Remotes: 
     github::kwb-r/kwb.wtaq
 Encoding: UTF-8

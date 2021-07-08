@@ -680,6 +680,17 @@ ucSetPlaceholder <- function # set placeholder in WTAQ parameter setting
 }
 
 # uwGofEval(): Evaluate goodness of fit for WTAQ result ------------------------
+#' uwGofEval
+#'
+#' @param res res 
+#' @param logtimes logtimes 
+#' @param gofs gofs
+#' @param ... additional parameters passed to \link[hydroGOF]{gof}
+#'
+#' @return ???
+#' @export
+#'
+#' @importFrom hydroGOF gof
 uwGofEval <- function # Evaluate goodness of fit for WTAQ result
 ### Evaluate goodness of fit for WTAQ result
 (
@@ -723,7 +734,7 @@ uwGofEval <- function # Evaluate goodness of fit for WTAQ result
   evalmtx <- NULL
   for (well in wells) {
     sel <- res$WELL == well
-    gofres <- gof(sim=res$CALCDD[sel], obs=res$MEASDD[sel], ...)
+    gofres <- hydroGOF::gof(sim=res$CALCDD[sel], obs=res$MEASDD[sel], ...)
     # Erase " %" in rownames
     rownames(gofres) <- sub(" %$", "", rownames(gofres))
     # Filter for desired fitness functions
@@ -741,7 +752,7 @@ uwGofEval <- function # Evaluate goodness of fit for WTAQ result
 uwGofNames <- function()# Names of available \emph{GOF} functions
 ### Names of available \emph{Goodness of fit (GOF)} functions
 {
-  sub(" %$", "", rownames(gof(1:2,1:2)))
+  sub(" %$", "", rownames(hydroGOF::gof(1:2,1:2)))
 }
 
 # uwGofTargetValue() -----------------------------------------------------------
@@ -792,6 +803,17 @@ uwGofTargetValue <- function # target values for different GOF functions
 }
 
 # ucPlotPng() ------------------------------------------------------------------
+
+#' ucPlotPng
+#'
+#' @param fname fname
+#' @param wtaqResult wtaqResult
+#' @param i i
+#'
+#' @return ????
+#' @export
+#'
+#' @importFrom grDevices dev.off png
 ucPlotPng <- function
 ### plot WTAQ results to png file
 (
@@ -800,12 +822,12 @@ ucPlotPng <- function
   i
 ) 
 {
-  png(fname)
+  grDevices::png(fname)
   wtPlotResult(wtaqResult, sprintf("Iteration: %d", i))
 #  if (file.exists("cal._summary")) {
 #    ucPlotSummary("cal._summary")
 #  }
-  dev.off()
+  grDevices::dev.off()
 }
 
 # htmlForCalibrationPage() -------------------------------------------------------------------
@@ -872,6 +894,17 @@ htmlForCalibrationHistory <- function # History HTML for calibration progress vi
 }
 
 # ucRunParallel ----------------------------------------------------------------
+#' ucRunParallel
+#'
+#' @param uconf uconf 
+#' @param tdir tdir
+#' @param wtaq wtaq
+#' @param FUN FUN
+#'
+#' @return ??? 
+#' @export
+#'
+#' @importFrom utils write.table
 ucRunParallel <- function # run main calibration loop
 ### run main calibration loop 
 (
@@ -952,7 +985,7 @@ ucRunParallel <- function # run main calibration loop
       # Evaluate GOF from WTAQ result wtaq.plot and write wtaq.gof
       gofres <- uwGofEval("wtaq.plot", digits = uconf$general$gof.digits, 
                           gofs = rownames(uconf$weights))
-      write.table(gofres, "wtaq.gof")
+      utils::write.table(gofres, "wtaq.gof")
  
       # Write file _GOF_AVAILABLE_
       write("", "_GOF_AVAILABLE_")
@@ -1006,13 +1039,21 @@ ucReadSummary <- function # Read UCODE summary file
 }
 
 # ucPlotSummary() --------------------------------------------------------------
+#' ucPlotSummary
+#'
+#' @param sfile sfile 
+#'
+#' @return ???
+#' @export
+#'
+#' @importFrom lattice xyplot
 ucPlotSummary <- function # Plot UCODE summary file
 ### Plot UCODE summary file
 (sfile) {
   dat <- ucReadSummary(sfile)
-  tr1 <- xyplot(HKR + HKZ ~ ITER, data = dat, type = "b", 
+  tr1 <- lattice::xyplot(HKR + HKZ ~ ITER, data = dat, type = "b", 
                 auto.key = list(columns = 2), xlab = "Iteration number")
-  tr2 <- xyplot(TOTAL ~ ITER, data = dat, type = "b", 
+  tr2 <- lattice::xyplot(TOTAL ~ ITER, data = dat, type = "b", 
                 auto.key = list(columns = 2), xlab = "Iteration number",
                 ylab = "Total sum of squared weighted residuals", 
                 scales = list(y = list(log=TRUE)))  
