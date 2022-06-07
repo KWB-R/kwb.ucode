@@ -1,129 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/index.html</loc>
   </url>
   <url>
-    <loc>/news/index.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/htmlForCalibrationHistory.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/htmlForCalibrationHistory.html</loc>
   </url>
   <url>
-    <loc>/reference/htmlForCalibrationPage.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/htmlForCalibrationPage.html</loc>
   </url>
   <url>
-    <loc>/reference/htmlForCalibrationState.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/htmlForCalibrationState.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/ucConf.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucConf.html</loc>
   </url>
   <url>
-    <loc>/reference/ucConfGeneral.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucConfGeneral.html</loc>
   </url>
   <url>
-    <loc>/reference/ucConfParameter.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucConfParameter.html</loc>
   </url>
   <url>
-    <loc>/reference/ucConf_Model_Command_Lines.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucConf_Model_Command_Lines.html</loc>
   </url>
   <url>
-    <loc>/reference/ucConf_Model_Input_Files.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucConf_Model_Input_Files.html</loc>
   </url>
   <url>
-    <loc>/reference/ucConf_Model_Output_Files.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucConf_Model_Output_Files.html</loc>
   </url>
   <url>
-    <loc>/reference/ucConf_Observation_Data.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucConf_Observation_Data.html</loc>
   </url>
   <url>
-    <loc>/reference/ucConf_Parameter_Data.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucConf_Parameter_Data.html</loc>
   </url>
   <url>
-    <loc>/reference/ucConf_Reg_GN_Controls.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucConf_Reg_GN_Controls.html</loc>
   </url>
   <url>
-    <loc>/reference/ucConf_UCODE_Control_Data.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucConf_UCODE_Control_Data.html</loc>
   </url>
   <url>
-    <loc>/reference/ucDefaultConfParameters.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucDefaultConfParameters.html</loc>
   </url>
   <url>
-    <loc>/reference/ucDefaultConfWeights.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucDefaultConfWeights.html</loc>
   </url>
   <url>
-    <loc>/reference/ucInpFileLines.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucInpFileLines.html</loc>
   </url>
   <url>
-    <loc>/reference/ucPlotPng.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucPlotPng.html</loc>
   </url>
   <url>
-    <loc>/reference/ucPlotSummary.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucPlotSummary.html</loc>
   </url>
   <url>
-    <loc>/reference/ucPrepCalib.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucPrepCalib.html</loc>
   </url>
   <url>
-    <loc>/reference/ucReadSummary.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucReadSummary.html</loc>
   </url>
   <url>
-    <loc>/reference/ucRunParallel.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucRunParallel.html</loc>
   </url>
   <url>
-    <loc>/reference/ucSetPlaceholder.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucSetPlaceholder.html</loc>
   </url>
   <url>
-    <loc>/reference/ucTable.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucTable.html</loc>
   </url>
   <url>
-    <loc>/reference/ucTestBatchWtaq.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucTestBatchWtaq.html</loc>
   </url>
   <url>
-    <loc>/reference/ucWriteArgs.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucWriteArgs.html</loc>
   </url>
   <url>
-    <loc>/reference/ucWriteBatchUcode.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucWriteBatchUcode.html</loc>
   </url>
   <url>
-    <loc>/reference/ucWriteBatchWtaq.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucWriteBatchWtaq.html</loc>
   </url>
   <url>
-    <loc>/reference/ucWriteBatchWtaqParallel.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucWriteBatchWtaqParallel.html</loc>
   </url>
   <url>
-    <loc>/reference/ucWriteEvalGofR.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucWriteEvalGofR.html</loc>
   </url>
   <url>
-    <loc>/reference/ucWriteInstruction.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucWriteInstruction.html</loc>
   </url>
   <url>
-    <loc>/reference/ucWriteMainInput.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucWriteMainInput.html</loc>
   </url>
   <url>
-    <loc>/reference/ucWriteTemplate.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/ucWriteTemplate.html</loc>
   </url>
   <url>
-    <loc>/reference/uwGofEval.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/uwGofEval.html</loc>
   </url>
   <url>
-    <loc>/reference/uwGofNames.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/uwGofNames.html</loc>
   </url>
   <url>
-    <loc>/reference/uwGofTargetValue.html</loc>
+    <loc>https://kwb-r.github.io/kwb.ucode/reference/uwGofTargetValue.html</loc>
   </url>
 </urlset>
