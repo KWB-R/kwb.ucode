@@ -204,7 +204,7 @@ ucTable <- function(dat)
   .datline <- function(flist, cwidth) {
     flist <- as.list(flist)
     cells <- c()
-    for (i in 1:length(flist)) {
+    for (i in seq_along(flist)) {
       fmt <- sprintf("%%%ds", cwidth[i])
       # convert to character as list elements may be factors!
       cells <- c(cells, sprintf(fmt, as.character(flist[[i]])))
@@ -215,13 +215,13 @@ ucTable <- function(dat)
   cwidth <- numeric()
   cnames <- names(dat)
   
-  for (i in 1:ncol(dat)) {
+  for (i in seq_len(ncol(dat))) {
     cwidth[i] <- max(nchar(cnames[i]), nchar(as.character(dat[[i]])))
   }
   
   datlines <- .datline(cnames, cwidth)
   
-  for (i in 1:nrow(dat)) {
+  for (i in seq_len(nrow(dat))) {
     datlines <- c(datlines, .datline(dat[i, ], cwidth))
   }
   
@@ -318,7 +318,7 @@ ucConf_Observation_Data <- function(weights )
   dat <- NULL
   wells <- colnames(weights)
   gofs  <- rownames(weights)
-  #for (i in 1:ncol(weight)) {
+  #for (i in seq_len(ncol(weight))) {
   for (well in wells) {
     for (gof in gofs) {
       # print only rows with weight > 0
@@ -870,7 +870,7 @@ uwGofEval <- function(
 #' 
 uwGofNames <- function()
 {
-  sub(" %$", "", rownames(hydroGOF::gof(1:2,1:2)))
+  sub(" %$", "", rownames(hydroGOF::gof(1:2, 1:2)))
 }
 
 # uwGofTargetValue -------------------------------------------------------------
